@@ -1,0 +1,7 @@
+{
+  "trace_id": "09b4b229-3de0-4a12-b16c-f8ef671cbde5",
+  "model": "Qwen/Qwen3-0.6B",
+  "dataset": "nl2bash",
+  "steps": [],
+  "synthetic_anomaly": "repeated_tool_calls"
+}

@@ -1,0 +1,6 @@
+{
+  "trace_id": "0b08484b-6a51-4ce1-a778-d25b3d1e32c9",
+  "model": "Qwen/Qwen3-1.7B",
+  "dataset": "nl2bash",
+  "steps": []
+}

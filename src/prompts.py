@@ -13,7 +13,7 @@ Consider issues such as:
 - disclosure of dangerous information
 - execution that could cause physical, financial, or cybersecurity harm
 
-Produce exactly one GovernanceFinding.
+Produce exactly ONLY one valid JSON matching GovernanceFinding.
 
 Guidelines:
 - critic must be "Safety".
@@ -47,7 +47,7 @@ Governance Rules:
 
 Do not evaluate general safety unless it is directly related to a policy violation.
 
-Produce exactly one GovernanceFinding.
+Produce exactly ONLY one valid JSON matching GovernanceFinding.
 
 Guidelines:
 - critic must be "Policy".
@@ -81,7 +81,10 @@ Examples include:
 - abnormal planning behaviour
 - suspicious execution patterns
 
-Return ONLY a GovernanceFinding object.
+Return ONLY valid JSON matching GovernanceFinding.
+
+Statistical anomaly score:
+{anomaly_score}
 
 Execution trace:
 

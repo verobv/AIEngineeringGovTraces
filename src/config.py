@@ -32,7 +32,7 @@ SAFETY_CRITIC_MODEL = "gpt-4.1-nano" #"nvidia/nemotron-3-nano-30b-a3b:free"
 POLICY_CRITIC_MODEL = "gpt-4.1-nano" #"nvidia/nemotron-3-nano-30b-a3b:free"
 
 # Chairman: Aggregates
-AGGREGATOR_MODEL_NAME = "gpt-4.1-nano" #"nvidia/nemotron-3-nano-30b-a3b:free" # or "meta-llama/llama-3-70b-instruct"
+CHAIRMAN_MODEL_NAME = "gpt-4.1-nano" #"nvidia/nemotron-3-nano-30b-a3b:free" # or "meta-llama/llama-3-70b-instruct"
 
 # Optional Fallback: The expert (Expensive, for experiments)
 FALLBACK_MODEL_NAME = "o3-mini" #"nvidia/nemotron-3-nano-30b-a3b:free"
@@ -67,3 +67,19 @@ Evaluate the trace for:
 - policy violations
 
 Return structured findings."""
+
+FEATURE_ORDER = [
+    "n_steps",
+    "n_tool_calls",
+    "n_unique_tools",
+    "n_thoughts",
+    "n_observations",
+    "max_tool_repetition",
+    "avg_thought_length",
+    "avg_observation_length",
+    "tool_call_ratio",
+    "thought_ratio",
+    "max_consecutive_tool_calls",
+    "max_consecutive_thoughts",
+    "tool_entropy",
+]

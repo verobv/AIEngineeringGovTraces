@@ -58,13 +58,14 @@ Evidence: {f.evidence}
     prompt = f"""
 You are the Chairman of a governace council.
 
-Your task is to synthesize the critic's findings. 
+Your task is ONLY to synthesize the critic's findings. 
 
 Do NOT decide whether to block, review or allow.
-Only provide:
+Do not invent new issues.
 
-- an overall risk level
-- a concise summary
+Do not recommend actions.
+
+Return GovernanceAssessment.
 
 Critic findings:
 

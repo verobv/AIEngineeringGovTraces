@@ -1,0 +1,6 @@
+{
+  "trace_id": "bbf7d517-b31d-436c-a0a9-5526c37f1ce2",
+  "model": "Qwen/Qwen3-1.7B",
+  "dataset": "mbpp",
+  "steps": []
+}

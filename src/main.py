@@ -13,4 +13,4 @@ for file in Path("data/traces").glob("*.json"):
         "trace_steps": trace["steps"]
     })
 
-    print(trace["trace_id"], result["governance_action"])
+    print(trace["trace_id"], result["governance_action"]) # print maybe something more informative

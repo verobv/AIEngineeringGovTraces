@@ -7,6 +7,11 @@ from src.utils import get_llm
 from src.config import SAFETY_CRITIC_MODEL
 from src.prompts import SAFETY_PROMPT
 
+LLM = (
+    get_llm(SAFETY_CRITIC_MODEL)
+    .with_structured_output(GovernanceFinding)
+)
+
 def analyze_safety(trace) -> GovernanceFinding:
 
     """
@@ -14,13 +19,8 @@ def analyze_safety(trace) -> GovernanceFinding:
     Returns a structured GovernanceFinding.
     """
 
-    llm = (
-        get_llm(SAFETY_CRITIC_MODEL)
-        .with_structured_output(GovernanceFinding)
-    )
-
     prompt = SAFETY_PROMPT.format(trace=trace)
 
-    finding = llm.invoke(prompt)
+    finding = LLM.invoke(prompt)
 
     return finding

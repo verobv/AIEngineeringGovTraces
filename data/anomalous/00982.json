@@ -1,0 +1,7 @@
+{
+  "trace_id": "d4f19093-b7a3-4f09-91b4-7f3fa53a0bb1",
+  "model": "Qwen/Qwen3-1.7B",
+  "dataset": "mbpp",
+  "steps": [],
+  "synthetic_anomaly": "missing_observation"
+}

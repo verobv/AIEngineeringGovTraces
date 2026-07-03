@@ -1,8 +1,5 @@
 import json
 
 def load_trace(path):
-
-    with open(path) as f:
-        trace = json.load(f)
-
-    return trace
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
