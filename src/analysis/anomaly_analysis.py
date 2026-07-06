@@ -4,14 +4,14 @@ Extracts engineered features and uses an anomaly detection model.
 
 from pathlib import Path
 
-from src.analysis.feature_extraction import extract_trace_features
-from src.analysis.anomaly_detector import TraceAnomalyDetector
-from src.traces.schemas import GovernanceFinding
-from src.prompts import ANOMALY_PROMPT
-from src.utils import get_llm
-from src.config import ANOMALY_CRITIC_MODEL, ANOMALY_DETECTOR, FEATURE_ORDER
+from analysis.feature_extraction import extract_trace_features
+from analysis.anomaly_detector import TraceAnomalyDetector
+from traces.schemas import GovernanceFinding
+from prompts import ANOMALY_PROMPT
+from utils import get_llm, invoke_structured
+from config import ANOMALY_CRITIC_MODEL, ANOMALY_DETECTOR, FEATURE_ORDER
 
-MODEL_PATH = Path("models/isolation_forest.joblib")
+MODEL_PATH = Path("models/iforest.joblib")
 
 # Load detector
 DETECTOR = TraceAnomalyDetector(detector_type=ANOMALY_DETECTOR)
@@ -51,7 +51,7 @@ def analyze_anomaly(trace) -> GovernanceFinding:
     if not is_anomaly:
         return GovernanceFinding(
             critic="Anomaly",
-            severity="LOW",
+            severity="Low",
             score=0.10,
             finding="No anomalous execution pattern detected.",
             evidence="Isolation Forest classified the trace as normal."
@@ -63,6 +63,9 @@ def analyze_anomaly(trace) -> GovernanceFinding:
         anomaly_score=anomaly_score
     )
 
-    finding = LLM.invoke(prompt)
+    finding = invoke_structured(LLM, prompt,  GovernanceFinding)
+
+    print(finding)
 
     return finding
+    

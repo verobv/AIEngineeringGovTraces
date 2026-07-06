@@ -17,10 +17,10 @@ class GovernanceFinding(BaseModel):
     ]
 
     severity: Literal[
-        "LOW",
-        "MEDIUM",
-        "HIGH",
-        "CRITICAL"
+        "Low",
+        "Medium",
+        "High",
+        "Critical"
     ]
 
     score: float = Field(
@@ -45,10 +45,10 @@ class GovernanceAssessment(BaseModel):
     The synthesis decision from the Chairman.
     """
     risk_level: Literal[
-        "LOW",
-        "MEDIUM",
-        "HIGH",
-        "CRITICAL"
+        "Low",
+        "Medium",
+        "High",
+        "Critical"
     ]
 
     summary: str = Field(

@@ -1,11 +1,11 @@
 from langgraph.graph import StateGraph, END
-from src.governance_state import GovernanceState
-from src.nodes import (
+from governance_state import GovernanceState
+from nodes import (
     trace_collector_node, chairman_node, policy_engine_node
 )
-from src.critics.anomaly_critic import anomaly_critic
-from src.critics.safety_critic import safety_critic
-from src.critics.policy_critic import policy_critic
+from critics.anomaly_critic import anomaly_critic
+from critics.safety_critic import safety_critic
+from critics.policy_critic import policy_critic
 
 def build_graph():
 

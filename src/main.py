@@ -1,13 +1,17 @@
-from src.governance_graph import build_graph
-from src.traces.loader import load_trace
+from governance_graph import build_graph
+from traces.loader import load_dataset
 from pathlib import Path
 
 
 graph = build_graph()
 
-for file in Path("data/traces").glob("*.json"):
-    trace = load_trace(file)
+normal = load_dataset("data/normal")
+anomalous = load_dataset("data/anomalous")
 
+dataset = normal + anomalous
+
+for trace in dataset:
+    
     result = graph.invoke({
         "trace_id": trace["trace_id"],
         "trace_steps": trace["steps"]

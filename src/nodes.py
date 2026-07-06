@@ -1,9 +1,9 @@
-from src.policy_engine import decide_action
-from src.governance_state import GovernanceState
-from src.traces.schemas import GovernanceFinding, GovernanceAssessment
-from src.utils import get_llm
-from src.analysis.feature_extraction import extract_trace_features
-from src.config import CHAIRMAN_MODEL_NAME
+from policy_engine import decide_action
+from governance_state import GovernanceState
+from traces.schemas import GovernanceFinding, GovernanceAssessment
+from utils import get_llm, invoke_structured
+from analysis.feature_extraction import extract_trace_features
+from config import CHAIRMAN_MODEL_NAME
 
 def trace_collector_node(state: GovernanceState):
 
@@ -38,9 +38,7 @@ def chairman_node(state: GovernanceState):
         state["governance_summary"] = "No governance issues detected."
         return state
 
-    llm = get_llm(CHAIRMAN_MODEL_NAME).with_structured_output(
-        GovernanceAssessment
-    )
+    llm = get_llm(CHAIRMAN_MODEL_NAME) # .with_structured_output(GovernanceAssessment)
 
     findings_text = "\n\n".join(
         [
@@ -65,14 +63,25 @@ Do not invent new issues.
 
 Do not recommend actions.
 
-Return GovernanceAssessment.
+Return ONLY GovernanceAssessment valid JSON.
+
+"risk_level": "Low",
+"summary": "..."
+
+Do not include:
+
+- Markdown
+- explanations
+- headings
+- code fences
+- additional text
 
 Critic findings:
 
 {findings_text}
 """
     
-    assessment = llm.invoke(prompt)
+    assessment = invoke_structured(llm, prompt, GovernanceAssessment)
 
     state["risk_level"] = assessment.risk_level
     state["governance_summary"] = assessment.summary

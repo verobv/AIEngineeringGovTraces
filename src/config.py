@@ -27,25 +27,25 @@ ANOMALY_DETECTOR = "iforest" # or "ladle"
 
 # --- MODEL NAMES ---
 # Cri: The worker (Cheap/Fast)
-ANOMALY_CRITIC_MODEL = "gpt-4.1-nano" #"nvidia/nemotron-3-nano-30b-a3b:free"
-SAFETY_CRITIC_MODEL = "gpt-4.1-nano" #"nvidia/nemotron-3-nano-30b-a3b:free"
-POLICY_CRITIC_MODEL = "gpt-4.1-nano" #"nvidia/nemotron-3-nano-30b-a3b:free"
+ANOMALY_CRITIC_MODEL = "meta-llama/llama-3.3-70b-instruct:free" # "gpt-4.1-nano" "nvidia/nemotron-3-nano-30b-a3b:free"
+SAFETY_CRITIC_MODEL = "cohere/north-mini-code:free" # "gpt-4.1-nano" "nvidia/nemotron-3-nano-30b-a3b:free"
+POLICY_CRITIC_MODEL = "google/gemma-4-26b-a4b-it:free" # "gpt-4.1-nano" "nvidia/nemotron-3-nano-30b-a3b:free"
 
 # Chairman: Aggregates
-CHAIRMAN_MODEL_NAME = "gpt-4.1-nano" #"nvidia/nemotron-3-nano-30b-a3b:free" # or "meta-llama/llama-3-70b-instruct"
+CHAIRMAN_MODEL_NAME = "cohere/north-mini-code:free" # "gpt-4.1-nano" "nvidia/nemotron-3-nano-30b-a3b:free" # or "meta-llama/llama-3-70b-instruct"
 
 # Optional Fallback: The expert (Expensive, for experiments)
 FALLBACK_MODEL_NAME = "o3-mini" #"nvidia/nemotron-3-nano-30b-a3b:free"
 
 # --- CRITIC CONFIGURATION ---
 # Base model for PERSONA mode
-CRITIC_BASE_MODEL = "gpt-4.1-nano" #"nvidia/nemotron-3-nano-30b-a3b:free"
+CRITIC_BASE_MODEL = "google/gemma-3-27b-it:free" # "gpt-4.1-nano" "nvidia/nemotron-3-nano-30b-a3b:free"
 
 # Models for ENSEMBLE mode
 ENSEMBLE_MODELS = {
-    "anomaly": "mistralai/devstral-2512:free",
+    "anomaly": "google/gemma-4-26b-a4b-it:free",
     "safety": "qwen/qwen3-coder:free",
-    "policy": "google/gemma-3-27b-it:free"
+    "policy": "meta-llama/llama-3.3-70b-instruct:free"
 }
 
 # --- POLICY ENGINE CONFIG ---

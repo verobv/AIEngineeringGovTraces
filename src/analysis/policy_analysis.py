@@ -2,15 +2,15 @@
 Uses an LLM to check compliance with governance policies.
 """
 
-from src.traces.schemas import GovernanceFinding
-from src.utils import get_llm
-from src.config import POLICY_CRITIC_MODEL
-from src.prompts import POLICY_PROMPT
-from src.policies import GOVERNANCE_RULES
+from traces.schemas import GovernanceFinding
+from utils import get_llm, invoke_structured
+from config import POLICY_CRITIC_MODEL
+from prompts import POLICY_PROMPT
+from policies import GOVERNANCE_RULES
 
 LLM = (
     get_llm(POLICY_CRITIC_MODEL)
-    .with_structured_output(GovernanceFinding)
+    #.with_structured_output(GovernanceFinding)
 )
 
 def analyze_policy(trace) -> GovernanceFinding:
@@ -27,6 +27,9 @@ def analyze_policy(trace) -> GovernanceFinding:
         rules=rules
     )
 
-    finding = LLM.invoke(prompt)
+    finding = invoke_structured(LLM, prompt,  GovernanceFinding)
+
+    print(finding)
 
     return finding
+    

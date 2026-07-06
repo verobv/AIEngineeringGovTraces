@@ -2,14 +2,14 @@
 Uses an LLM to inspect the trace for unsafe behavior.
 """
 
-from src.traces.schemas import GovernanceFinding
-from src.utils import get_llm
-from src.config import SAFETY_CRITIC_MODEL
-from src.prompts import SAFETY_PROMPT
+from traces.schemas import GovernanceFinding
+from utils import get_llm, invoke_structured
+from config import SAFETY_CRITIC_MODEL
+from prompts import SAFETY_PROMPT
 
 LLM = (
     get_llm(SAFETY_CRITIC_MODEL)
-    .with_structured_output(GovernanceFinding)
+    #.with_structured_output(GovernanceFinding)
 )
 
 def analyze_safety(trace) -> GovernanceFinding:
@@ -21,6 +21,12 @@ def analyze_safety(trace) -> GovernanceFinding:
 
     prompt = SAFETY_PROMPT.format(trace=trace)
 
-    finding = LLM.invoke(prompt)
+    # finding = LLM.invoke(prompt)
+
+    # return finding
+
+    finding = invoke_structured(LLM, prompt,  GovernanceFinding)
+
+    print(finding)
 
     return finding

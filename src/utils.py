@@ -1,6 +1,8 @@
 from langchain_openai import ChatOpenAI
-from src.config import OPENAI_API_KEY, OPENROUTER_API_KEY
-import os
+from config import OPENAI_API_KEY, OPENROUTER_API_KEY
+import re
+from time import sleep
+from openai import RateLimitError
 
 def get_llm(model_name: str, temperature: float = 0.0):
     """
@@ -30,18 +32,54 @@ def get_llm(model_name: str, temperature: float = 0.0):
         params["temperature"] = temperature
 
     if any(x in model_name.lower() for x in ["gpt", "o1", "o3"]):
-        api_key = os.environ.get("OPENAI_API_KEY")
-        if not api_key:
+        
+        if not OPENAI_API_KEY:
             raise ValueError("❌ OPENAI_API_KEY is missing in environment variables!")
             
         return ChatOpenAI(
-            api_key=api_key,
+            api_key=OPENAI_API_KEY,
             **params
         )
     else:
         # OpenRouter
+        if not OPENROUTER_API_KEY:
+            raise ValueError("OPENROUTER_API_KEY not found.")
+
         return ChatOpenAI(
-            api_key=os.environ.get("OPENROUTER_API_KEY"),
+            api_key=OPENROUTER_API_KEY,
             base_url="https://openrouter.ai/api/v1",
             **params
         )
+    
+def extract_json(text: str) -> str:
+    match = re.search(r"\{.*\}", text, re.DOTALL)
+    if not match:
+        raise ValueError("No JSON object found.")
+
+    return match.group(0)
+
+def invoke_structured(llm, prompt, schema, retries=3):
+    for attempt in range(retries):
+        try:
+            response = llm.invoke(prompt).content
+
+            json_str = extract_json(response)
+
+            return schema.model_validate_json(json_str)
+
+        except RateLimitError as e:
+
+            wait = 5 * (attempt + 1)
+
+            print(f"Rate limited. Waiting {wait}s...")
+
+            sleep(wait)
+
+        except Exception as e:
+
+            if attempt == retries - 1:
+                raise
+
+            print(f"Retry {attempt+1}: {e}")
+
+            sleep(2)

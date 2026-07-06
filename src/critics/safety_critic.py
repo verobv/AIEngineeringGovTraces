@@ -1,4 +1,4 @@
-from src.analysis.safety_analysis import analyze_safety
+from analysis.safety_analysis import analyze_safety
 
 def safety_critic(state):
 
@@ -14,4 +14,6 @@ def safety_critic(state):
 
     state["findings"] = [finding]
 
-    return state
+    return {
+        "findings": [finding]
+    }

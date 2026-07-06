@@ -1,4 +1,4 @@
-from src.analysis.policy_analysis import analyze_policy
+from analysis.policy_analysis import analyze_policy
 
 def policy_critic(state):
 
@@ -14,4 +14,6 @@ def policy_critic(state):
 
     state["findings"] = [finding]
 
-    return state
+    return {
+        "findings": [finding]
+    }

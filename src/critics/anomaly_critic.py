@@ -1,4 +1,4 @@
-from src.analysis.anomaly_analysis import analyze_anomaly
+from analysis.anomaly_analysis import analyze_anomaly
 
 def anomaly_critic(state):
 
@@ -14,4 +14,6 @@ def anomaly_critic(state):
 
     state["findings"] = [finding]
 
-    return state
+    return {
+        "findings": [finding]
+    }

@@ -1,5 +1,5 @@
 from typing import TypedDict, List, Annotated, Union
-from src.traces.schemas import GovernanceFinding
+from traces.schemas import GovernanceFinding
 from typing import NotRequired
 
 def reduce_findings(left: List[GovernanceFinding], right: Union[List[GovernanceFinding], str]) -> List[GovernanceFinding]:
