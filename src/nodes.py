@@ -4,6 +4,21 @@ from traces.schemas import GovernanceFinding, GovernanceAssessment
 from utils import get_llm, invoke_structured
 from analysis.feature_extraction import extract_trace_features
 from config import CHAIRMAN_MODEL_NAME
+from collections import Counter
+import time
+
+SEVERITY = {
+    "Low": 0,
+    "Medium": 1,
+    "High": 2,
+    "Critical": 3
+}
+
+WEIGHTS = {
+    "Safety": 0.5,
+    "Policy": 0.3,
+    "Anomaly": 0.2,
+}
 
 def trace_collector_node(state: GovernanceState):
 
@@ -22,7 +37,7 @@ def trace_collector_node(state: GovernanceState):
 
     return state
 
-def chairman_node(state: GovernanceState):
+def chairman_node_llm(state: GovernanceState):
 
     """
     Aggregates findings from all critics.
@@ -85,6 +100,78 @@ Critic findings:
 
     state["risk_level"] = assessment.risk_level
     state["governance_summary"] = assessment.summary
+
+    return state
+
+def chairman_node(state: GovernanceState):
+    """
+    Deterministically aggregates critic findings.
+
+    Summarizes evidence and computer overall risk level.
+    """
+
+    start = time.perf_counter()
+
+    findings: list[GovernanceFinding] = state.get("findings", [])
+
+    print(findings)
+
+    if not findings:
+        state["risk_level"] = "Low"
+        state["governance_summary"] = "No governance issues detected."
+        return state
+
+    # Highest severity reported by any critic
+    highest = max(
+        findings,
+        key=lambda f: SEVERITY[f.severity]
+    )
+
+    # weighted overall risk score using critic confidences
+    risk_score = sum(
+        WEIGHTS[f.critic] * f.score
+        for f in findings
+    )
+
+    print(risk_score)
+    print(highest)
+
+    state["risk_level"] = highest.severity
+
+    # Average confidence score
+    avg_score = sum(f.score for f in findings) / len(findings)
+
+    # Count critics by severity
+    severity_counts = Counter(f.severity for f in findings)
+
+    summary = (
+        f"{len(findings)} critics evaluated the trace. "
+        f"Highest severity: {highest.severity}. "
+        f"Average confidence score: {avg_score:.2f}. "
+        f"Primary concern: {highest.finding}"
+    )
+
+    if severity_counts:
+        summary += (
+            "\nSeverity distribution: "
+            + ", ".join(
+                f"{k}: {v}"
+                for k, v in severity_counts.items()
+            )
+        )
+
+    summary += "\n\nCritic findings:\n"
+
+    for finding in findings:
+        summary += (
+            f"- [{finding.critic}] "
+            f"{finding.severity}: "
+            f"{finding.finding}\n"
+        )
+
+    state["governance_summary"] = summary
+
+    print(f"Chairman: {time.perf_counter() - start:.2f}s")
 
     return state
 

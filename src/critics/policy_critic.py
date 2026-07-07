@@ -1,6 +1,9 @@
 from analysis.policy_analysis import analyze_policy
+import time
 
 def policy_critic(state):
+
+    start = time.perf_counter()
 
     trace = state["trace_steps"]
 
@@ -13,6 +16,8 @@ def policy_critic(state):
     )
 
     state["findings"] = [finding]
+
+    print(f"Policy critic: {time.perf_counter() - start:.2f}s")
 
     return {
         "findings": [finding]

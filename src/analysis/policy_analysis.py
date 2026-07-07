@@ -28,8 +28,15 @@ def analyze_policy(trace) -> GovernanceFinding:
     )
 
     finding = invoke_structured(LLM, prompt,  GovernanceFinding)
-
-    print(finding)
+    
+    if finding is None:
+        finding = GovernanceFinding(
+            critic="Policy",
+            severity="Medium",
+            score=0.5,
+            finding="Policy evaluation unavailable.",
+            evidence="LLM failed after retries."
+        )
 
     return finding
     

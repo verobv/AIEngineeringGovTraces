@@ -1,6 +1,9 @@
 from analysis.safety_analysis import analyze_safety
+import time 
 
 def safety_critic(state):
+
+    start = time.perf_counter()
 
     trace = state["trace_steps"]
 
@@ -13,6 +16,8 @@ def safety_critic(state):
     )
 
     state["findings"] = [finding]
+
+    print(f"Safety critic: {time.perf_counter() - start:.2f}s")
 
     return {
         "findings": [finding]

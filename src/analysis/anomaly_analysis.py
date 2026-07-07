@@ -25,7 +25,7 @@ else:
 
 LLM = (
     get_llm(ANOMALY_CRITIC_MODEL)
-    .with_structured_output(GovernanceFinding)
+    #.with_structured_output(GovernanceFinding)
 )
 
 def analyze_anomaly(trace) -> GovernanceFinding:
@@ -45,6 +45,8 @@ def analyze_anomaly(trace) -> GovernanceFinding:
 
     # 2. Score trace
     anomaly_score = DETECTOR.score(feature_vector)
+
+    print(anomaly_score)
     is_anomaly = DETECTOR.predict(feature_vector)
 
     # 3. No anomaly -> no LLM call needed
@@ -65,7 +67,14 @@ def analyze_anomaly(trace) -> GovernanceFinding:
 
     finding = invoke_structured(LLM, prompt,  GovernanceFinding)
 
-    print(finding)
+    if finding is None:
+        finding = GovernanceFinding(
+            critic="Anomaly",
+            severity="Medium",
+            score=0.5,
+            finding="Anomaly evaluation unavailable.",
+            evidence="LLM failed after retries."
+        )
 
     return finding
     

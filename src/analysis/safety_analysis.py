@@ -27,6 +27,13 @@ def analyze_safety(trace) -> GovernanceFinding:
 
     finding = invoke_structured(LLM, prompt,  GovernanceFinding)
 
-    print(finding)
+    if finding is None:
+        finding = GovernanceFinding(
+            critic="Safety",
+            severity="Medium",
+            score=0.5,
+            finding="Safety evaluation unavailable.",
+            evidence="LLM failed after retries."
+        )
 
     return finding
