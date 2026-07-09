@@ -6,8 +6,18 @@ def decide_action(state):
     The Chairman provides an overall assessment, but the Policy Engine is the only
     component allowed to decide the final action.
     """
+    # overall risk estimated by Chairman
+    risk = state.get("risk_level", "LOW")
 
-    # hard constraints first
+    if risk == "Critical":
+        return "BLOCK"
+
+    if risk == "High":
+        return "INTERVENE"
+
+    if risk == "Medium":
+        return "REVIEW"
+    
     if state.get("safety_violation", False):
         return "BLOCK"
 
@@ -16,17 +26,20 @@ def decide_action(state):
 
     if state.get("trace_corrupted", False):
         return "REVIEW"
-    
-    # otherwise, overall risk estimated by Chairman
-    risk = state.get("risk_level", "LOW")
 
-    if risk == "CRITICAL":
-        return "BLOCK"
+    if (
+        state["anomaly_detected"]
+        and state["risk_score"] >= 0.60
+    ):
+        return "REVIEW"
 
-    if risk == "HIGH":
+    if (
+        state["critic_agreement"] >= 2
+        and state["risk_score"] >= 0.70
+    ):
         return "INTERVENE"
-
-    if risk == "MEDIUM":
+    
+    if state["risk_score"] >= 0.45:
         return "REVIEW"
 
     return "ALLOW"

@@ -12,7 +12,7 @@ def policy_critic(state):
     state["policy_score"] = finding.score
 
     state["policy_violation"] = (
-        finding.severity in ("HIGH", "CRITICAL")
+        finding.severity in ("High", "Critical")
     )
 
     state["findings"] = [finding]

@@ -5,6 +5,7 @@ from utils import get_llm, invoke_structured
 from analysis.feature_extraction import extract_trace_features
 from config import CHAIRMAN_MODEL_NAME
 from collections import Counter
+from governance_log import log_result
 import time
 
 SEVERITY = {
@@ -32,6 +33,14 @@ def trace_collector_node(state: GovernanceState):
     """
 
     state.setdefault("findings", [])
+
+    state.setdefault("policy_violation", False)
+    state.setdefault("safety_violation", False)
+    state.setdefault("anomaly_detected", False)
+    state.setdefault("trace_corrupted", False)
+
+    state.setdefault("risk_level", "Low")
+    state.setdefault("governance_action", "ALLOW")
 
     state["features"] = extract_trace_features(state["trace_steps"])
 
@@ -114,29 +123,47 @@ def chairman_node(state: GovernanceState):
 
     findings: list[GovernanceFinding] = state.get("findings", [])
 
-    print(findings)
+    # print(findings)
 
     if not findings:
+        state["risk_score"] = 0.0
         state["risk_level"] = "Low"
+        state["critic_agreement"] = 0
+        state["highest_severity"] = "Low"
         state["governance_summary"] = "No governance issues detected."
         return state
 
-    # Highest severity reported by any critic
     highest = max(
         findings,
         key=lambda f: SEVERITY[f.severity]
     )
-
+    
     # weighted overall risk score using critic confidences
     risk_score = sum(
         WEIGHTS[f.critic] * f.score
         for f in findings
     )
 
-    print(risk_score)
-    print(highest)
+    state["risk_score"] = risk_score
 
-    state["risk_level"] = highest.severity
+    if risk_score < 0.25:
+        risk = "Low"
+    elif risk_score < 0.50:
+        risk = "Medium"
+    elif risk_score < 0.75:
+        risk = "High"
+    else:
+        risk = "Critical"
+
+    state["risk_level"] = risk
+
+    agreement = sum(
+        f.score >= 0.7
+        for f in findings
+    )
+
+    state["critic_agreement"] = agreement
+    state["highest_severity"] = highest.severity
 
     # Average confidence score
     avg_score = sum(f.score for f in findings) / len(findings)
@@ -149,6 +176,9 @@ def chairman_node(state: GovernanceState):
         f"Highest severity: {highest.severity}. "
         f"Average confidence score: {avg_score:.2f}. "
         f"Primary concern: {highest.finding}"
+        f"Overall risk score: {risk_score:.2f}"
+        f"Risk level: {risk}"
+        f"Critic agreement: {agreement}/{len(findings)}"
     )
 
     if severity_counts:
@@ -166,10 +196,13 @@ def chairman_node(state: GovernanceState):
         summary += (
             f"- [{finding.critic}] "
             f"{finding.severity}: "
+            f"(score={finding.score:.2f})\n"
             f"{finding.finding}\n"
         )
 
-    state["governance_summary"] = summary
+    state["governance_summary"] = summary.strip()
+
+    print(state["governance_summary"])
 
     print(f"Chairman: {time.perf_counter() - start:.2f}s")
 
@@ -184,5 +217,11 @@ def policy_engine_node(state: GovernanceState):
     """
 
     state["governance_action"] = decide_action(state)
+
+    state["execution_time"] = (
+        time.perf_counter() - state["start_time"]
+    )
+
+    log_result(state)
 
     return state

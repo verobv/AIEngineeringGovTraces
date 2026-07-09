@@ -13,6 +13,7 @@ class GovernanceState(TypedDict):
 
     trace_id: str
     trace_steps: list
+    start_time: float
 
     features: NotRequired[dict]
 
@@ -28,7 +29,16 @@ class GovernanceState(TypedDict):
     safety_violation: NotRequired[bool]
     policy_violation: NotRequired[bool]
     trace_corrupted: NotRequired[bool]
+    anomaly_detected: NotRequired[bool]
+    unauthorized_tools: list[str]
 
     governance_action: NotRequired[str]
     governance_summary: NotRequired[str]
+
+    # Useful metadata
+    critic_agreement: int
+    highest_severity: str
+
+    risk_score: NotRequired[float]
     risk_level: NotRequired[str]
+    execution_time: NotRequired[float]
