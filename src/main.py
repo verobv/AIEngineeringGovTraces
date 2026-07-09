@@ -39,5 +39,5 @@ print(f"Total execution time: {end - start:.2f} seconds")
 """
 TO DO:
 - improve anomaly detector, ladle
-- log execution times
+- improve policy critic
 """
