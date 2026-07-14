@@ -318,6 +318,79 @@ def critic_latency(results):
 
     return stats
 
+def detection_metrics(results):
+    """
+    Evaluate governance system as a binary anomaly detector.
+
+    Positive = anomalous trace
+    Negative = normal trace
+
+    Prediction is considered positive if the governance system
+    decided anything other than ALLOW.
+    """
+
+    tp = fp = tn = fn = 0
+
+    for r in results:
+
+        actual_positive = (r["label"].lower() == "anomalous")
+
+        predicted_positive = (r["risk_level"] != "Low")
+
+        if actual_positive and predicted_positive:
+            tp += 1
+
+        elif actual_positive and not predicted_positive:
+            fn += 1
+
+        elif not actual_positive and predicted_positive:
+            fp += 1
+
+        else:
+            tn += 1
+
+    precision = tp / (tp + fp) if tp + fp else 0
+    recall = tp / (tp + fn) if tp + fn else 0
+
+    f1 = (
+        2 * precision * recall / (precision + recall)
+        if precision + recall else 0
+    )
+
+    accuracy = (tp + tn) / len(results)
+
+    fpr = fp / (fp + tn) if fp + tn else 0
+    fnr = fn / (fn + tp) if fn + tp else 0
+
+    print("\n=== Detection metrics ===")
+
+    print(f"TP : {tp}")
+    print(f"FP : {fp}")
+    print(f"TN : {tn}")
+    print(f"FN : {fn}")
+
+    print()
+
+    print(f"Accuracy  : {accuracy:.3f}")
+    print(f"Precision : {precision:.3f}")
+    print(f"Recall    : {recall:.3f}")
+    print(f"F1-score  : {f1:.3f}")
+    print(f"FPR       : {fpr:.3f}")
+    print(f"FNR       : {fnr:.3f}")
+
+    return {
+        "TP": tp,
+        "FP": fp,
+        "TN": tn,
+        "FN": fn,
+        "accuracy": round(accuracy, 3),
+        "precision": round(precision, 3),
+        "recall": round(recall, 3),
+        "f1": round(f1, 3),
+        "false_positive_rate": round(fpr, 3),
+        "false_negative_rate": round(fnr, 3),
+    }
+
 def build_summary(results):
 
     return {
@@ -333,7 +406,8 @@ def build_summary(results):
         "decision_matrix": decision_matrix(results),
         "timing": timing(results),
         "findings": common_findings(results),
-        "findings_by_critic": findings_by_critic(results)
+        "findings_by_critic": findings_by_critic(results),
+        "detection_metrics": detection_metrics(results)
     }
 
 

@@ -136,7 +136,7 @@ def check_policy_rules(trace):
     # Rule 6
     # Missing final answer
     #
-
+    """
     if not any(
         step.get("type") == "final_answer"
         for step in trace
@@ -148,7 +148,7 @@ def check_policy_rules(trace):
             "message": "Trace never reaches a final answer",
             "evidence": "Missing final_answer step",
         })
-
+    """
     #
     # Rule 7
     # Tool output without tool call

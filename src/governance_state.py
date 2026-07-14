@@ -14,6 +14,7 @@ class GovernanceState(TypedDict):
     trace_id: str
     trace_steps: list
     start_time: float
+    ground_truth: str
 
     features: NotRequired[dict]
 

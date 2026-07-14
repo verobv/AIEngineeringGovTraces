@@ -20,7 +20,8 @@ def log_result(state):
             }
             for f in state["findings"]
         ],
-        "execution_time": state["execution_time"]
+        "execution_time": state["execution_time"],
+        "ground_truth": state["ground_truth"]
     }
 
     with open(LOG_FILE, "a") as f:

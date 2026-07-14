@@ -59,7 +59,7 @@ def extract_json(text: str) -> str:
     return match.group(0)
 
 def invoke_structured(llm, prompt, schema, retries=3):
-    for attempt in range(retries):
+    """for attempt in range(retries):
         try:
             response = llm.invoke(prompt).content
 
@@ -82,4 +82,11 @@ def invoke_structured(llm, prompt, schema, retries=3):
 
             print(f"Retry {attempt+1}: {e}")
 
-            sleep(2)
+            sleep(2)"""
+    try:
+        response = llm.invoke(prompt).content
+        return schema.model_validate_json(extract_json(response))
+
+    except RateLimitError as e:
+        print(e)
+        raise
