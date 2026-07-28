@@ -14,5 +14,13 @@ venv/
 .idea/
 
 data/
+models/
 show/
 .pytest_cache/
+
+*.joblib
+*.pkl
+
+evaluation_results*.csv
+
+

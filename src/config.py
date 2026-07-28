@@ -23,7 +23,10 @@ AB_MODES = {
 # --- EXPERIMENT SETTINGS ---
 # Mode "PERSONA": One model with different prompts (Thesis Core)
 EXPERIMENT_MODE = "PERSONA" 
-ANOMALY_DETECTOR = "iforest" # or "ladle"
+ANOMALY_DETECTOR = "ladle" # "iforest" 
+EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+K_NEIGHBORS = 5
+WINDOW_SIZE = 3
 
 # --- MODEL NAMES ---
 # Cri: The worker (Cheap/Fast)

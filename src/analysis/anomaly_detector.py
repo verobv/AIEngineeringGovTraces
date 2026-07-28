@@ -8,7 +8,7 @@ class TraceAnomalyDetector:
 
     Supported models:
         - Isolation Forest (implemented)
-        - LADLE (placeholder)
+        - Random Forest
     """
 
     def __init__(
@@ -25,14 +25,10 @@ class TraceAnomalyDetector:
                 random_state=random_state,
             )
 
-        elif self.detector_type == "ladle":
-            # TODO: Replace with LADLE implementation
-            self.model = None
-
         else:
             raise ValueError(
                 f"Unsupported detector '{detector_type}'. "
-                "Choose 'iforest' or 'ladle'."
+                "Choose 'iforest' or 'rforest'."
             )
 
     def fit(self, X):
@@ -41,9 +37,9 @@ class TraceAnomalyDetector:
         if self.detector_type == "iforest":
             self.model.fit(X)
 
-        elif self.detector_type == "ladle":
+        elif self.detector_type == "rforest":
             raise NotImplementedError(
-                "LADLE training not implemented yet."
+                "Random Forest training not implemented yet."
             )
 
     def score(self, x):
@@ -60,9 +56,9 @@ class TraceAnomalyDetector:
             # Invert so larger means more anomalous
             return -raw
 
-        elif self.detector_type == "ladle":
+        elif self.detector_type == "rforest":
             raise NotImplementedError(
-                "LADLE scoring not implemented yet."
+                "Random Forest training not implemented yet."
             )
 
     def predict(self, x):
@@ -73,7 +69,7 @@ class TraceAnomalyDetector:
         if self.detector_type == "iforest":
             return self.model.predict([x])[0] == -1
 
-        elif self.detector_type == "ladle":
+        elif self.detector_type == "rforest":
             raise NotImplementedError
 
     def save(self, path: str):
@@ -83,7 +79,7 @@ class TraceAnomalyDetector:
 
         if self.detector_type != "iforest":
             raise NotImplementedError(
-                "Saving not implemented for LADLE."
+                "Saving not implemented for Random Forest."
             )
 
         path = Path(path)
@@ -98,7 +94,7 @@ class TraceAnomalyDetector:
 
         if self.detector_type != "iforest":
             raise NotImplementedError(
-                "Loading not implemented for LADLE."
+                "Loading not implemented for Random Forest."
             )
 
         self.model = joblib.load(path)

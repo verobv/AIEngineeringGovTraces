@@ -1,9 +1,59 @@
 # AIEngineeringGovTraces
 Exploring methods for the question of governance in agentic systems
 
-First experiment:
+Isolation Forest evaluation:
 
-(base) PS C:\Users\verit\AIEngineeringGovTraces> python src/metrics.py
+========== RESULTS ==========
+
+Accuracy : 0.574
+Precision: 0.799
+Recall   : 0.199
+F1-score : 0.318
+
+Confusion Matrix
+[[1330   70]
+ [1122  278]]
+
+Classification Report
+              precision    recall  f1-score   support
+
+           0       0.54      0.95      0.69      1400
+           1       0.80      0.20      0.32      1400
+
+    accuracy                           0.57      2800
+   macro avg       0.67      0.57      0.50      2800
+weighted avg       0.67      0.57      0.50      2800
+
+Predicted anomalies: 348
+Predicted normal: 2452
+
+OneLadle evaluation:
+
+========== RESULTS ==========
+
+Accuracy : 0.538
+Precision: 0.717
+Recall   : 0.126
+F1-score : 0.215
+
+Confusion Matrix
+[[1330   70]
+ [1223  177]]
+
+Classification Report
+              precision    recall  f1-score   support
+
+           0       0.52      0.95      0.67      1400
+           1       0.72      0.13      0.21      1400
+
+    accuracy                           0.54      2800
+   macro avg       0.62      0.54      0.44      2800
+weighted avg       0.62      0.54      0.44      2800
+
+Predicted anomalies: 247
+Predicted normal: 2553
+
+First experiment:
 
 === Governance actions ===
 ALLOW          68 (67.3%)
@@ -103,8 +153,6 @@ Decision consistency
 101/101 (100.0%)
 
 Experiment 2:
-
-(base) PS C:\Users\verit\AIEngineeringGovTraces> python src/metrics.py
 
 === Governance actions ===
 ALLOW          69 (69.0%)
