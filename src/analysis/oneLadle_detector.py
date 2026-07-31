@@ -85,7 +85,9 @@ class OneLadleDetector:
 
             distances, _ = self.nn.kneighbors(trace_embeddings)
 
-            score = float(np.mean(distances))
+            window_scores = np.mean(distances, axis=1)
+
+            score = float(np.max(window_scores))
 
             scores.append(score)
 

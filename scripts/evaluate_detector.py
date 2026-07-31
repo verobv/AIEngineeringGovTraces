@@ -305,6 +305,8 @@ def main():
 
     print(f"\nROC-AUC: {roc_auc:.3f}")
 
+    print("ROC (negated):", roc_auc_score(labels, -scores))
+
     fpr, tpr, _ = roc_curve(labels, scores)
 
     plt.figure(figsize=(6,6))
