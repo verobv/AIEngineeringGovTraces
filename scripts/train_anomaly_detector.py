@@ -10,7 +10,7 @@ from src.analysis.anomaly_detector import TraceAnomalyDetector
 from src.traces.loader import load_trace
 from src.config import ANOMALY_DETECTOR, FEATURE_ORDER
 
-DATA_DIR = PROJECT_ROOT / "data" / "normal"
+DATA_DIR = PROJECT_ROOT / "data" / "train" / "normal"
 MODEL_PATH = PROJECT_ROOT / "models" / f"{ANOMALY_DETECTOR}.joblib"
 
 def build_training_matrix():

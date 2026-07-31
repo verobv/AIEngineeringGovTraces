@@ -29,8 +29,8 @@ from src.config import ANOMALY_DETECTOR, FEATURE_ORDER
 
 MODEL_PATH = PROJECT_ROOT / "models" / f"{ANOMALY_DETECTOR}.joblib"
 
-NORMAL_DIR = PROJECT_ROOT / "data" / "normal"
-ANOMALOUS_DIR = PROJECT_ROOT / "data" / "anomalous"
+NORMAL_DIR = PROJECT_ROOT / "data" / "test" / "normal"
+ANOMALOUS_DIR = PROJECT_ROOT / "data" / "test" / "anomalous"
 
 def evaluate_directory(detector, directory, expected_label):
     """

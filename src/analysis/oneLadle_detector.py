@@ -18,6 +18,7 @@ class OneLadleDetector:
         )
 
         self.threshold = None
+        self.best_f1 = None
 
     def _create_windows(self, trace):
 
@@ -107,7 +108,7 @@ class OneLadleDetector:
 
         window_scores = np.mean(distances, axis=1)
 
-        return float(np.mean(window_scores))
+        return float(np.max(window_scores))
 
     def predict(self, trace, threshold=None):
 
@@ -124,6 +125,8 @@ class OneLadleDetector:
                 "threshold": self.threshold,
                 "k": self.k,
                 "window_size": self.window_size,
+                "threshold_source": "validation",
+                "best_f1": self.best_f1,
             },
             path
         )

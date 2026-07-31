@@ -1,100 +1,98 @@
-from sklearn.ensemble import IsolationForest
 from pathlib import Path
 import joblib
 
+from sklearn.ensemble import IsolationForest
+from sklearn.neighbors import LocalOutlierFactor
+
+
 class TraceAnomalyDetector:
     """
-    Wrapper around anomaly detection models.
+    Generic anomaly detector wrapper.
 
-    Supported models:
-        - Isolation Forest (implemented)
-        - Random Forest
+    Supported detectors
+
+    - Isolation Forest
+    - Local Outlier Factor
     """
 
     def __init__(
         self,
-        detector_type: str = "iforest",
-        contamination: float = 0.05,
-        random_state: int = 42,
+        detector_type="iforest",
+        contamination=0.05,
+        random_state=42,
     ):
+
         self.detector_type = detector_type.lower()
 
+        self.threshold = 0.0
+        self.best_f1 = None
+
         if self.detector_type == "iforest":
+
             self.model = IsolationForest(
                 contamination=contamination,
                 random_state=random_state,
             )
 
+        elif self.detector_type == "lof":
+
+            self.model = LocalOutlierFactor(
+                contamination=contamination,
+                novelty=True,
+            )
+
         else:
+
             raise ValueError(
-                f"Unsupported detector '{detector_type}'. "
-                "Choose 'iforest' or 'rforest'."
+                f"Unsupported detector '{detector_type}'"
             )
 
     def fit(self, X):
-        """Train the anomaly detector."""
 
-        if self.detector_type == "iforest":
-            self.model.fit(X)
-
-        elif self.detector_type == "rforest":
-            raise NotImplementedError(
-                "Random Forest training not implemented yet."
-            )
+        self.model.fit(X)
 
     def score(self, x):
         """
-        Returns an anomaly score.
-        Higher values indicate more anomalous traces.
+        Higher = more anomalous.
         """
 
-        if self.detector_type == "iforest":
-            # Isolation Forest:
-            # decision_function -> higher = more normal
-            raw = self.model.decision_function([x])[0]
+        raw = self.model.decision_function([x])[0]
 
-            # Invert so larger means more anomalous
-            return -raw
+        return -raw
 
-        elif self.detector_type == "rforest":
-            raise NotImplementedError(
-                "Random Forest training not implemented yet."
-            )
+    def predict(self, x, threshold=None):
 
-    def predict(self, x):
-        """
-        Returns True if the trace is anomalous.
-        """
+        if threshold is None:
+            threshold = self.threshold
 
-        if self.detector_type == "iforest":
-            return self.model.predict([x])[0] == -1
+        return self.score(x) >= threshold
 
-        elif self.detector_type == "rforest":
-            raise NotImplementedError
-
-    def save(self, path: str):
-        """
-        Save the trained detector to disk.
-        """
-
-        if self.detector_type != "iforest":
-            raise NotImplementedError(
-                "Saving not implemented for Random Forest."
-            )
+    def save(self, path):
 
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
 
-        joblib.dump(self.model, path)
+        joblib.dump(
+            {
+                "model": self.model,
+                "threshold": self.threshold,
+                "best_f1": self.best_f1,
+                "detector_type": self.detector_type,
+            },
+            path,
+        )
 
-    def load(self, path: str):
-        """
-        Load a trained detector from disk.
-        """
+    def load(self, path):
 
-        if self.detector_type != "iforest":
-            raise NotImplementedError(
-                "Loading not implemented for Random Forest."
-            )
+        data = joblib.load(path)
 
-        self.model = joblib.load(path)
+        self.model = data["model"]
+
+        self.threshold = data.get("threshold", 0.0)
+
+        self.best_f1  = data.get("best_f1")
+
+        self.detector_type = data.get(
+            "detector_type",
+            self.detector_type,
+        )

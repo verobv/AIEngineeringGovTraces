@@ -23,7 +23,7 @@ AB_MODES = {
 # --- EXPERIMENT SETTINGS ---
 # Mode "PERSONA": One model with different prompts (Thesis Core)
 EXPERIMENT_MODE = "PERSONA" 
-ANOMALY_DETECTOR = "ladle" # "iforest" 
+ANOMALY_DETECTOR = "lof" # "ladle" # "iforest" 
 EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 K_NEIGHBORS = 5
 WINDOW_SIZE = 3
@@ -77,12 +77,27 @@ FEATURE_ORDER = [
     "n_unique_tools",
     "n_thoughts",
     "n_observations",
-    "max_tool_repetition",
-    "avg_thought_length",
-    "avg_observation_length",
+
     "tool_call_ratio",
     "thought_ratio",
+    "observation_ratio",
+
+    "avg_thought_length",
+    "avg_observation_length",
+    "avg_thought_words",
+    "avg_observation_words",
+
+    "max_tool_repetition",
+    "tool_entropy",
+    "repeated_tool_sequences",
+
     "max_consecutive_tool_calls",
     "max_consecutive_thoughts",
-    "tool_entropy",
+
+    "step_type_entropy",
+    "tool_diversity",
+
+    "steps_per_tool",
+    "thoughts_per_tool",
+    "observations_per_tool",
 ]
