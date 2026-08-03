@@ -127,7 +127,9 @@ def evaluate_directory(detector, directory, expected_label):
 
     distances, _ = detector.nn.kneighbors(embeddings)
 
-    window_scores = np.mean(distances, axis=1)
+    # window_scores = np.mean(distances, axis=1)
+
+    window_scores = distances[:, -1]
 
     start = 0
 
@@ -139,7 +141,7 @@ def evaluate_directory(detector, directory, expected_label):
 
         end = start + n_windows
 
-        score = float(np.mean(window_scores[start:end]))
+        score = float(np.max(window_scores[start:end]))
 
         prediction = int(score > detector.threshold)
 

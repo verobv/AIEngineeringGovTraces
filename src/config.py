@@ -24,7 +24,7 @@ AB_MODES = {
 # Mode "PERSONA": One model with different prompts (Thesis Core)
 EXPERIMENT_MODE = "PERSONA" 
 ANOMALY_DETECTOR = "ladle" # "lof" # "ladle" # "iforest" 
-EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+EMBEDDING_MODEL = "BAAI/bge-large-en-v1.5" # "sentence-transformers/all-MiniLM-L6-v2"
 K_NEIGHBORS = 5
 WINDOW_SIZE = 3
 
