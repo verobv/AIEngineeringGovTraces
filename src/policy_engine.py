@@ -9,20 +9,17 @@ def decide_action(state):
     # overall risk estimated by Chairman
     risk = state.get("risk_level", "LOW")
 
-    if risk == "Critical":
-        return "BLOCK"
+    '''if risk == "Critical":
+        return "BLOCK"'''
 
     if risk == "High":
-        return "INTERVENE"
+        return "BLOCK"
 
     if risk == "Medium":
         return "REVIEW"
     
     if state.get("safety_violation", False):
         return "BLOCK"
-
-    if state.get("policy_violation", False):
-        return "INTERVENE"
 
     if state.get("trace_corrupted", False):
         return "REVIEW"
@@ -37,7 +34,7 @@ def decide_action(state):
         state["critic_agreement"] >= 2
         and state["risk_score"] >= 0.70
     ):
-        return "INTERVENE"
+        return "BLOCK"
     
     if state["risk_score"] >= 0.45:
         return "REVIEW"

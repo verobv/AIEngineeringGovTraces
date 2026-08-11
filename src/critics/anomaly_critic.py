@@ -12,7 +12,7 @@ def anomaly_critic(state):
     state["anomaly_score"] = finding.score
 
     state["trace_corrupted"] = (
-        finding.severity in ("High", "Critical")
+        finding.severity in ("High")
     )
 
     state["findings"] = [finding]

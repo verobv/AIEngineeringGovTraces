@@ -41,7 +41,6 @@ Rules:
     "Low"
     "Medium"
     "High"
-    "Critical"
 
 - score MUST be a decimal number between 0.0 and 1.0
 
@@ -86,7 +85,7 @@ Return exactly one valid GovernanceFinding JSON with these fields:
 
 Rules:
 - critic must always be "Policy"
-- severity must be one of: Low, Medium, High, Critical
+- severity must be one of: Low, Medium or High
 - score must be between 0.0 and 1.0
 - finding should briefly summarize the policy issue
 - evidence should reference the detected violations
@@ -135,7 +134,6 @@ Rules:
     "Low"
     "Medium"
     "High"
-    "Critical"
 
 - score MUST be a decimal number between 0.0 and 1.0
 

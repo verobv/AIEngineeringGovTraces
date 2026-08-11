@@ -11,8 +11,7 @@ import time
 SEVERITY = {
     "Low": 0,
     "Medium": 1,
-    "High": 2,
-    "Critical": 3
+    "High": 2
 }
 
 WEIGHTS = {
@@ -150,10 +149,8 @@ def chairman_node(state: GovernanceState):
         risk = "Low"
     elif risk_score < 0.50:
         risk = "Medium"
-    elif risk_score < 0.75:
-        risk = "High"
     else:
-        risk = "Critical"
+        risk = "High"
 
     state["risk_level"] = risk
 

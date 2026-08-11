@@ -6,14 +6,14 @@ from .embedding import embed
 
 class OneLadleDetector:
 
-    def __init__(self, k=5, window_size=5, threshold_percentile=95):
+    def __init__(self, k=10, window_size=10, threshold_percentile=95):
 
         self.k = k
         self.window_size = window_size
         self.threshold_percentile = threshold_percentile
 
         self.nn = NearestNeighbors(
-            n_neighbors=k,
+            n_neighbors=self.k + 1,
             metric="cosine"
         )
 
@@ -84,6 +84,8 @@ class OneLadleDetector:
             trace_embeddings = embeddings[start:end]
 
             distances, _ = self.nn.kneighbors(trace_embeddings)
+
+            distances = distances[:,1:]   # remove self-match
 
             window_scores = np.mean(distances, axis=1)
 

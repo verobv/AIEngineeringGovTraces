@@ -11,16 +11,14 @@ class GovernanceFinding(BaseModel):
     critic: Literal[
         "Anomaly",
         "Safety",
-        "Policy",
-        "Reasoning",
-        "Integrity"
+        "Policy"
     ]
 
     severity: Literal[
         "Low",
         "Medium",
-        "High",
-        "Critical"
+        "High"
+        # "Critical"
     ]
 
     score: float = Field(
@@ -47,8 +45,8 @@ class GovernanceAssessment(BaseModel):
     risk_level: Literal[
         "Low",
         "Medium",
-        "High",
-        "Critical"
+        "High"
+        # "Critical"
     ]
 
     summary: str = Field(

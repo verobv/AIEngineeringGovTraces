@@ -12,7 +12,7 @@ def safety_critic(state):
     state["safety_score"] = finding.score
 
     state["safety_violation"] = (
-        finding.severity in ("High", "Critical")
+        finding.severity in ("High")
     )
 
     state["findings"] = [finding]

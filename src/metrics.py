@@ -2,6 +2,7 @@ import json
 from collections import Counter
 from statistics import median
 
+CRITICS = ["Anomaly", "Policy", "Safety"]
 
 def load_results(path="governance_results.jsonl"):
 
@@ -144,7 +145,7 @@ def critic_severity_statistics(results):
 
     stats = {}
 
-    for critic in ["Anomaly", "Policy", "Safety"]:
+    for critic in CRITICS:
 
         counter = Counter()
 
@@ -168,7 +169,7 @@ def findings_by_critic(results):
 
     stats = {}
 
-    for critic in ["Anomaly", "Policy", "Safety"]:
+    for critic in CRITICS:
 
         counter = Counter()
 
@@ -243,7 +244,7 @@ def critic_activation(results):
 
     stats = {}
 
-    for critic in ["Anomaly","Policy","Safety"]:
+    for critic in CRITICS:
 
         active = 0
 
@@ -427,8 +428,8 @@ def decision_consistency(results):
     consistent = sum(
         r["risk_level"] == "Low" and r["governance_action"] == "ALLOW"
         or r["risk_level"] == "Medium" and r["governance_action"] == "REVIEW"
-        or r["risk_level"] == "High" and r["governance_action"] == "INTERVENE"
-        or r["risk_level"] == "Critical" and r["governance_action"] == "BLOCK"
+        or r["risk_level"] == "High" and r["governance_action"] == "BLOCK"
+        # or r["risk_level"] == "Critical" and r["governance_action"] == "BLOCK"
         for r in results
     )
 

@@ -127,7 +127,7 @@ def check_policy_rules(trace):
 
         violations.append({
             "rule": "SENSITIVE_INFORMATION",
-            "severity": "Critical",
+            "severity": "High",
             "message": f"Detected sensitive keyword '{keyword}'",
             "evidence": keyword,
         })
