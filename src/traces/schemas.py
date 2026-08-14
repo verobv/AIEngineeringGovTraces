@@ -25,7 +25,7 @@ class GovernanceFinding(BaseModel):
         ...,
         ge=0.0,
         le=1.0,
-        description="Risk score assigned by the critic."
+        description="Governance risk score from 0 (low risk) to 1 (high risk)."
     )
 
     finding: str = Field(

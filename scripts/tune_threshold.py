@@ -62,7 +62,43 @@ def main():
     scores = np.array(normal_scores + anomaly_scores)
     labels = np.array(normal_labels + anomaly_labels)
 
-    thresholds = np.linspace(scores.min(), scores.max(), 200)
+    min_score = float(scores.min())
+    max_score = float(scores.max())
+
+    print("\nValidation score statistics")
+    print("--------------------------")
+
+    print(
+        f"Normal mean   : "
+        f"{np.mean(normal_scores):.4f}"
+    )
+
+    print(
+        f"Normal std    : "
+        f"{np.std(normal_scores):.4f}"
+    )
+
+    print(
+        f"Anomaly mean  : "
+        f"{np.mean(anomaly_scores):.4f}"
+    )
+
+    print(
+        f"Anomaly std   : "
+        f"{np.std(anomaly_scores):.4f}"
+    )
+
+    print(
+        f"Minimum score : "
+        f"{min_score:.4f}"
+    )
+
+    print(
+        f"Maximum score : "
+        f"{max_score:.4f}"
+    )
+
+    thresholds = np.linspace(min_score, max_score, 200)
 
     best_threshold = None
     best_f1 = -1
@@ -78,15 +114,29 @@ def main():
             best_f1 = f1
             best_threshold = threshold
 
-    print("\nBest threshold")
-    print("----------------")
-    print(best_threshold)
-
-    print("Best F1")
-    print(best_f1)
-
     detector.threshold = float(best_threshold)
     detector.best_f1 = float(best_f1)
+    detector.min_score = min_score
+    detector.max_score = max_score
+
+    print("\nBest threshold")
+    print("----------------")
+    print(
+        f"{best_threshold:.6f}"
+    )
+
+    print("\nBest validation F1")
+    print("------------------")
+    print(
+        f"{best_f1:.6f}"
+    )
+
+    print("\nCalibration range")
+    print("-----------------")
+    print(
+        f"{min_score:.6f} -> "
+        f"{max_score:.6f}"
+    )
 
     detector.save(MODEL_PATH)
 

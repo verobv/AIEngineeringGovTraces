@@ -135,7 +135,7 @@ Rules:
     "Medium"
     "High"
 
-- score MUST be a decimal number between 0.0 and 1.0
+- score MUST be a decimal number between 0.0 and 1.0. 
 
 - finding MUST be a short sentence.
 
@@ -148,6 +148,20 @@ Return ONLY the JSON object.
 
 Statistical anomaly score:
 {anomaly_score}
+
+Calibrated anomaly risk:
+{calibrated_anomaly_score}
+
+The calibrated anomaly risk is derived from the
+Isolation Forest validation threshold and score range.
+
+Use it as statistical evidence when assessing
+governance risk.
+
+Do NOT automatically copy the calibrated anomaly
+risk into the `score` field. The `score` field represents
+your assessment of governance risk, not merely statistical
+anomaly magnitude.
 
 Execution trace:
 

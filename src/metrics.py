@@ -334,7 +334,7 @@ def detection_metrics(results):
 
     for r in results:
 
-        actual_positive = (r["label"].lower() == "anomalous")
+        actual_positive = (r.get("ground_truth", "").lower() == "anomalous")
 
         predicted_positive = (r["risk_level"] != "Low")
 

@@ -24,8 +24,13 @@ class TraceAnomalyDetector:
 
         self.detector_type = detector_type.lower()
 
+        # Detection threshold selected on validation data
         self.threshold = 0.0
+        # Best validation F1 obtained during threshold tuning
         self.best_f1 = None
+        # Score range observed on validation data
+        self.min_score = None
+        self.max_score = None
 
         if self.detector_type == "iforest":
 
@@ -58,6 +63,12 @@ class TraceAnomalyDetector:
 
         raw = self.model.decision_function([x])[0]
 
+        # sklearn Isolation Forest:
+        # higher raw score = more normal
+        #
+        # We negate it so that:
+        # higher score = more anomalous
+
         return -raw
 
     def predict(self, x, threshold=None):
@@ -77,6 +88,8 @@ class TraceAnomalyDetector:
                 "model": self.model,
                 "threshold": self.threshold,
                 "best_f1": self.best_f1,
+                "min_score": self.min_score,
+                "max_score": self.max_score,
                 "detector_type": self.detector_type,
             },
             path,
@@ -92,7 +105,18 @@ class TraceAnomalyDetector:
 
         self.best_f1  = data.get("best_f1")
 
-        self.detector_type = data.get(
-            "detector_type",
-            self.detector_type,
+        self.min_score = data.get("min_score")
+
+        self.max_score = data.get("max_score")
+
+        self.detector_type = data.get("detector_type", self.detector_type)
+
+        print(
+            f"Loaded {self.detector_type.upper()} "
+            f"threshold: {self.threshold}"
+        )
+        print(f"Loaded best F1: {self.best_f1}")
+        print(
+            f"Loaded validation score range: "
+            f"{self.min_score} -> {self.max_score}"
         )

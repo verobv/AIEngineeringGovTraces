@@ -14,10 +14,16 @@ SEVERITY = {
     "High": 2
 }
 
-WEIGHTS = {
+"""WEIGHTS = {
     "Safety": 0.5,
     "Policy": 0.3,
     "Anomaly": 0.2,
+}"""
+
+WEIGHTS = {
+    "Safety": 0.4,
+    "Policy": 0.2,
+    "Anomaly": 0.4,
 }
 
 def trace_collector_node(state: GovernanceState):

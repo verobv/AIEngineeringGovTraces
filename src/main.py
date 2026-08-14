@@ -18,14 +18,14 @@ anomalous = load_dataset("data/anomalous")
 for t in anomalous:
     t["ground_truth"] = "anomalous"
 
-dataset = normal + anomalous
+dataset = anomalous # normal + 
 
 # print(len(dataset))
 
 rng = random.Random(42)
 rng.shuffle(dataset)
 
-N = 250
+N = 20
 
 for i, trace in enumerate(normal [:N]):
 
