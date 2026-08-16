@@ -9,14 +9,14 @@ class OneLadleDetector:
     def __init__(
         self,
         k=5,
-        window_size=5,
+        window_size=10,
         threshold_percentile=95,
-        top_fraction=0.10,
+        score_percentile=90,
     ):
         self.k = k
         self.window_size = window_size
         self.threshold_percentile = threshold_percentile
-        self.top_fraction = top_fraction
+        self.score_percentile = score_percentile
 
         self.nn = NearestNeighbors(
             n_neighbors=k,
@@ -46,33 +46,25 @@ class OneLadleDetector:
 
         return windows
 
-    def _aggregate_window_scores(self, window_scores):
+    def _trace_score(self, distances):
 
-        """
-        Convert window-level anomaly scores into one trace-level score.
+        # Average the k nearest-neighbour distances
+        window_scores = np.mean(distances, axis=1)
 
-        Instead of taking only the single most anomalous window,
-        average the highest-scoring fraction of windows.
-
-        This makes the detector sensitive to sustained anomalous
-        behaviour rather than one unusual semantic window.
-        """
-
-        if len(window_scores) == 0:
-            return 0.0
-
-        window_scores = np.asarray(window_scores)
-
-        # Number of windows to keep
-        n_top = max(
-            1,
-            int(np.ceil(len(window_scores) * self.top_fraction))
+        # Your previous experiment showed that anomalous traces
+        # tend to have LOWER distances than normal traces.
+        #
+        # Use the negative distance so that:
+        # higher score = more anomalous
+        #
+        # 90th percentile is more robust than taking a single
+        # maximum window.
+        return float(
+            -np.percentile(
+                window_scores,
+                self.score_percentile
+            )
         )
-
-        # Highest-scoring windows
-        top_scores = np.sort(window_scores)[-n_top:]
-
-        return float(np.mean(top_scores))
 
     def fit(self, traces):
 
@@ -122,18 +114,19 @@ class OneLadleDetector:
                 trace_embeddings
             )
 
-            # Distance of each window from its k nearest
-            # reference windows
-            window_scores = np.mean(distances, axis=1)
-
-            # NEW: aggregate the worst 10% rather than max
-            score = self._aggregate_window_scores(
-                window_scores
-            )
+            score = self._trace_score(distances)
 
             scores.append(score)
 
             start = end
+
+        scores = np.asarray(scores)
+
+        print("\n========== TRAINING SCORE STATISTICS ==========")
+        print(f"Mean score   : {np.mean(scores):.4f}")
+        print(f"Std score    : {np.std(scores):.4f}")
+        print(f"Min score    : {np.min(scores):.4f}")
+        print(f"Max score    : {np.max(scores):.4f}")
 
         self.threshold = np.percentile(
             scores,
@@ -141,23 +134,8 @@ class OneLadleDetector:
         )
 
         print(
-            f"Trace score mean = {np.mean(scores):.4f}"
-        )
-
-        print(
-            f"Trace score std = {np.std(scores):.4f}"
-        )
-
-        print(
-            f"Trace score min = {np.min(scores):.4f}"
-        )
-
-        print(
-            f"Trace score max = {np.max(scores):.4f}"
-        )
-
-        print(
-            f"Threshold = {self.threshold:.4f}"
+            f"Threshold ({self.threshold_percentile}th percentile)"
+            f" = {self.threshold:.4f}"
         )
 
     def score(self, trace):
@@ -170,11 +148,7 @@ class OneLadleDetector:
             embeddings
         )
 
-        window_scores = np.mean(distances, axis=1)
-
-        return self._aggregate_window_scores(
-            window_scores
-        )
+        return self._trace_score(distances)
 
     def predict(self, trace, threshold=None):
 
@@ -192,8 +166,8 @@ class OneLadleDetector:
                 "k": self.k,
                 "window_size": self.window_size,
                 "threshold_percentile": self.threshold_percentile,
-                "top_fraction": self.top_fraction,
-                "threshold_source": "validation",
+                "score_percentile": self.score_percentile,
+                "threshold_source": "normal_training",
                 "best_f1": self.best_f1,
             },
             path
@@ -213,9 +187,9 @@ class OneLadleDetector:
             95
         )
 
-        self.top_fraction = data.get(
-            "top_fraction",
-            0.10
+        self.score_percentile = data.get(
+            "score_percentile",
+            90
         )
 
         self.best_f1 = data.get(
