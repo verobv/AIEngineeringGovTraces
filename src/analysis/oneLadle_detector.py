@@ -6,14 +6,20 @@ from .embedding import embed
 
 class OneLadleDetector:
 
-    def __init__(self, k=10, window_size=10, threshold_percentile=95):
-
+    def __init__(
+        self,
+        k=5,
+        window_size=5,
+        threshold_percentile=95,
+        top_fraction=0.10,
+    ):
         self.k = k
         self.window_size = window_size
         self.threshold_percentile = threshold_percentile
+        self.top_fraction = top_fraction
 
         self.nn = NearestNeighbors(
-            n_neighbors=self.k + 1,
+            n_neighbors=k,
             metric="cosine"
         )
 
@@ -40,6 +46,34 @@ class OneLadleDetector:
 
         return windows
 
+    def _aggregate_window_scores(self, window_scores):
+
+        """
+        Convert window-level anomaly scores into one trace-level score.
+
+        Instead of taking only the single most anomalous window,
+        average the highest-scoring fraction of windows.
+
+        This makes the detector sensitive to sustained anomalous
+        behaviour rather than one unusual semantic window.
+        """
+
+        if len(window_scores) == 0:
+            return 0.0
+
+        window_scores = np.asarray(window_scores)
+
+        # Number of windows to keep
+        n_top = max(
+            1,
+            int(np.ceil(len(window_scores) * self.top_fraction))
+        )
+
+        # Highest-scoring windows
+        top_scores = np.sort(window_scores)[-n_top:]
+
+        return float(np.mean(top_scores))
+
     def fit(self, traces):
 
         lengths = [len(t) for t in traces]
@@ -55,7 +89,9 @@ class OneLadleDetector:
         trace_window_counts = []
 
         for trace in traces:
+
             windows = self._create_windows(trace)
+
             trace_window_counts.append(len(windows))
             reference_windows.extend(windows)
 
@@ -70,7 +106,6 @@ class OneLadleDetector:
         self.nn.fit(embeddings)
 
         print("Nearest-neighbor index built.")
-
         print("Computing training scores...")
 
         scores = []
@@ -83,13 +118,18 @@ class OneLadleDetector:
 
             trace_embeddings = embeddings[start:end]
 
-            distances, _ = self.nn.kneighbors(trace_embeddings)
+            distances, _ = self.nn.kneighbors(
+                trace_embeddings
+            )
 
-            distances = distances[:,1:]   # remove self-match
-
+            # Distance of each window from its k nearest
+            # reference windows
             window_scores = np.mean(distances, axis=1)
 
-            score = float(np.max(window_scores))
+            # NEW: aggregate the worst 10% rather than max
+            score = self._aggregate_window_scores(
+                window_scores
+            )
 
             scores.append(score)
 
@@ -100,7 +140,25 @@ class OneLadleDetector:
             self.threshold_percentile
         )
 
-        print(f"Threshold = {self.threshold:.4f}")
+        print(
+            f"Trace score mean = {np.mean(scores):.4f}"
+        )
+
+        print(
+            f"Trace score std = {np.std(scores):.4f}"
+        )
+
+        print(
+            f"Trace score min = {np.min(scores):.4f}"
+        )
+
+        print(
+            f"Trace score max = {np.max(scores):.4f}"
+        )
+
+        print(
+            f"Threshold = {self.threshold:.4f}"
+        )
 
     def score(self, trace):
 
@@ -108,11 +166,15 @@ class OneLadleDetector:
 
         embeddings = embed(windows)
 
-        distances, _ = self.nn.kneighbors(embeddings)
+        distances, _ = self.nn.kneighbors(
+            embeddings
+        )
 
         window_scores = np.mean(distances, axis=1)
 
-        return float(np.max(window_scores))
+        return self._aggregate_window_scores(
+            window_scores
+        )
 
     def predict(self, trace, threshold=None):
 
@@ -129,6 +191,8 @@ class OneLadleDetector:
                 "threshold": self.threshold,
                 "k": self.k,
                 "window_size": self.window_size,
+                "threshold_percentile": self.threshold_percentile,
+                "top_fraction": self.top_fraction,
                 "threshold_source": "validation",
                 "best_f1": self.best_f1,
             },
@@ -143,3 +207,18 @@ class OneLadleDetector:
         self.threshold = data["threshold"]
         self.k = data["k"]
         self.window_size = data["window_size"]
+
+        self.threshold_percentile = data.get(
+            "threshold_percentile",
+            95
+        )
+
+        self.top_fraction = data.get(
+            "top_fraction",
+            0.10
+        )
+
+        self.best_f1 = data.get(
+            "best_f1",
+            None
+        )
